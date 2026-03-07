@@ -4,11 +4,13 @@
  * Includes local storage backup for "Offline First" functionality as requested.
  */
 
-export class ActivityLogger {
+import { API_CONFIG } from "./config.js";
+
+    export class ActivityLogger {
     constructor() {
         this.activities = [];
-        // The endpoint will be provided by Juan Carlos from the Backend
-        this.apiEndpoint = 'http://localhost:3000/api/activities'; 
+        // Use centralized config instead of hardcoded string
+        this.apiEndpoint = `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACTIVITIES || 'activities'}`; 
     }
 
     /**
@@ -62,12 +64,58 @@ export class ActivityLogger {
     async getHistory(animalId) {
         try {
             const response = await fetch(`${this.apiEndpoint}/${animalId}`);
+            if (!response.ok) throw new Error("Fetch error");
             return await response.json();
         } catch (error) {
-            // Return local logs if the network request fails
-            return JSON.parse(localStorage.getItem('fincapp_offline_logs')) || [];
+            // FIX: Filter local logs to return only the specific animal's history
+            const allLogs = JSON.parse(localStorage.getItem('fincapp_offline_logs')) || [];
+            return allLogs.filter(log => log.animal_id === animalId);
         }
     }
+}
+
+/**
+ * Synchronizes all pending local records with the server.
+ * This is the heart of the "Offline First" strategy.
+ */
+async function syncAllPendingRecords() {
+    const localLogs = JSON.parse(localStorage.getItem('fincapp_offline_logs')) || [];
+    
+    if (localLogs.length === 0) {
+        console.log("✅ No pending records to sync.");
+        return { success: true, count: 0 };
+    }
+
+    console.log(`🔄 Attempting to sync ${localLogs.length} records...`);
+    let syncedCount = 0;
+    let failedRecords = [];
+
+    for (const record of localLogs) {
+        try {
+            const response = await fetch(this.apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+            });
+
+            if (response.ok) {
+                syncedCount++;
+            } else {
+                failedRecords.push(record);
+            }
+        } catch (error) {
+            failedRecords.push(record);
+        }
+    }
+
+    // Update LocalStorage only with what could NOT be uploaded.
+    localStorage.setItem('fincapp_offline_logs', JSON.stringify(failedRecords));
+
+    return {
+        success: failedRecords.length === 0,
+        synced: syncedCount,
+        pending: failedRecords.length
+    };
 }
 
 // Exporting an instance for centralized use in main.js
