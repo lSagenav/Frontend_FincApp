@@ -8,25 +8,72 @@ export function showToast(message, type = 'safe') {
     const toast = document.createElement('div');
     
     // Dynamic classes according to health status (Traffic Light)
-    const bgColors = {
-        safe: 'bg-green-600',
-        warning: 'bg-yellow-500',
-        critical: 'bg-red-600'
-    };
+    const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
 
-    toast.className = `${bgColors[type]} text-white px-6 py-3 rounded-lg shadow-lg mb-3 transform translate-y-10 opacity-0 transition-all duration-500`;
-    toast.innerText = message;
+    toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in transition-all duration-500`;
+    toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span class="font-bold text-sm uppercase tracking-wide">${message}</span>
+    `;
 
     container.appendChild(toast);
+
+    // Disappear after 4 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
 
     // Entrance animation
     setTimeout(() => {
         toast.classList.remove('translate-y-10', 'opacity-0');
     }, 100);
 
-    // Disappear after 4 seconds
+}
+
+export function openAnimalModal(animalId) {
+    const modal = document.getElementById('animal-modal');
+    const banner = document.getElementById('modal-alert-banner');
+    
+    // Cambiar color del banner basado en lógica (Traffic Light)
+    banner.className = animalId === 103 ? 'bg-red-600' : 'bg-green-600';
+    
+    modal.classList.remove('hidden');
     setTimeout(() => {
-        toast.classList.add('opacity-0');
-        setTimeout(() => toast.remove(), 500);
-    }, 4000);
+        document.getElementById('modal-container').classList.remove('scale-95');
+    }, 10);
+}
+
+export async function exportInventoryToPDF(data) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // FincApp Branding
+    doc.setFontSize(22);
+    doc.setTextColor(22, 101, 52); // Green-800
+    doc.text("FincApp | Livestock Health Report", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleString()} - Strictly English UI`, 14, 28);
+
+    // Table Generation
+    const tableRows = data.map(animal => [
+        `#${animal.tag}`,
+        animal.breed,
+        animal.birth_date,
+        "Healthy / Stable" // AI Diagnosis Placeholder
+    ]);
+
+    doc.autoTable({
+        startY: 35,
+        head: [['Tag', 'Breed', 'Birth Date', 'AI Status']],
+        body: tableRows,
+        headStyles: { fillColor: [22, 101, 52] },
+        theme: 'striped'
+    });
+
+    doc.save(`FincApp_Inventory_${Date.now()}.pdf`);
 }

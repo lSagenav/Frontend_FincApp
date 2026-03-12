@@ -9,6 +9,7 @@ import activityLogger from './activityLogger.js';
 import { aiService } from './ai-service.js';
 import voiceAssistant from './voice-logic.js';
 import { pdfService } from './pdf-logic.js';
+import { setupFormEvents } from './main.js';
 
 // --- 1. CORE LOGIC: PROCESS UPDATE ---
 async function handleLivestockUpdate(animalId, weight) {
