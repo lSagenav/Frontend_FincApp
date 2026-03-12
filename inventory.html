@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FincApp | Livestock Inventory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans">
+
+    <header class="bg-green-900 text-white">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 text-2xl font-bold">
+                <i class="fas fa-leaf"></i> FincApp
+            </div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="opacity-80 hover:opacity-100">Home</a></li>
+                <li><a href="inventory.html" class="font-bold">Inventory</a></li>
+                <li><a href="#" class="opacity-80 hover:opacity-100 text-yellow-400"><i class="fas fa-cloud-upload-alt"></i> Sync</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        
+        <section class="lg:col-span-1 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fas fa-plus-circle text-green-600"></i> New Registration
+            </h2>
+            
+            <form id="livestock-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 uppercase mb-2">Tag Number</label>
+                    <input type="text" id="livestock-tag" placeholder="e.g. 101" required
+                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 uppercase mb-2">Breed</label>
+                    <input type="text" id="livestock-breed" placeholder="e.g. Angus" required
+                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 uppercase mb-2">Birth Date</label>
+                    <input type="date" id="birth-date" required
+                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition">
+                </div>
+
+                <button type="submit" id="btn-save-record" 
+                    class="w-full bg-green-700 text-white font-bold py-3 rounded-lg hover:bg-green-800 transition shadow-md">
+                    REGISTER ANIMAL
+                </button>
+            </form>
+        </section>
+
+        <section class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800">Livestock Inventory</h2>
+                <button class="text-sm bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-md font-semibold text-slate-600">
+                    <i class="fas fa-download"></i> Export List
+                </button>
+            </div>
+            
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-50 text-slate-400 text-xs font-bold uppercase">
+                    <tr>
+                        <th class="p-4">Tag</th>
+                        <th class="p-4">Breed</th>
+                        <th class="p-4">Last Weight</th>
+                        <th class="p-4">Health Status</th>
+                    </tr>
+                </thead>
+                <tbody id="report-table-body" class="divide-y divide-slate-100">
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>
