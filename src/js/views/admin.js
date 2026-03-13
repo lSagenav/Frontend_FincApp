@@ -88,9 +88,9 @@ export async function initAdminLogic() {
 
     let users = [], animals = [], activities = [], healthRecords = [];
 
-    try { users = await apiService.get('users'); } catch { users = []; }
-    try { animals = await apiService.get('livestock'); } catch { animals = getLocal('fincapp_livestock'); }
-    try { activities = await apiService.get('activities'); } catch { activities = getLocal('fincapp_activities'); }
+    try { users = await apiService.get('user'); } catch { users = []; }
+    try { animals = await apiService.get('animals'); } catch { animals = getLocal('fincapp_livestock'); }
+    try { activities = await apiService.get('farm-events'); } catch { activities = getLocal('fincapp_activities'); }
     try { healthRecords = await apiService.get('health-records'); } catch { healthRecords = getLocal('fincapp_health_records'); }
 
     // Stats
@@ -124,7 +124,7 @@ export async function initAdminLogic() {
     window.deleteUser = async (id) => {
         if (!confirm('Delete this user? This cannot be undone.')) return;
         try {
-            await apiService.delete(`users/${id}`);
+            await apiService.delete(`user/${id}`);
             showToast('User deleted', 'info');
             speak('User removed from the system');
             const updated = users.filter(u => u.id !== id);

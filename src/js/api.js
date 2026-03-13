@@ -8,6 +8,18 @@ const BASE_URL = 'http://localhost:3000/api';
 const PYTHON_URL = 'http://localhost:5000/api';
 const OFFLINE_QUEUE_KEY = 'fincapp_offline_queue';
 
+export const ENDPOINTS = {
+    animals:       'animals',
+    user:          'user',
+    weights:       'weights',
+    farmEvents:    'farm-events',
+    healthRecords: 'health-records',
+    vaccines:      'vaccines',
+    analytics:     'analytics',
+    reports:       'reports',
+    sync:          'sync'
+};
+
 // ===== CORE API SERVICE =====
 export const apiService = {
     async get(endpoint) {
@@ -202,5 +214,6 @@ export function updateOnlineStatus() {
 // ===== HELPERS =====
 function authHeaders() {
     const session = JSON.parse(localStorage.getItem('fincapp_session') || '{}');
-    return session.token ? { 'Authorization': `Bearer ${session.token}` } : {};
+    const token = session.token || session.user?.token;
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
 }

@@ -46,7 +46,7 @@ export function renderActivities() {
 export async function initActivitiesLogic() {
     let activities = [];
     try {
-        activities = await apiService.get('activities');
+        activities = await apiService.get('farm-events');
     } catch {
         activities = getLocal('fincapp_activities');
     }
@@ -55,7 +55,7 @@ export async function initActivitiesLogic() {
 
     document.getElementById('btn-add-activity')?.addEventListener('click', () => {
         openActivityForm(async (data) => {
-            await offlinePost('activities', data, 'fincapp_activities');
+            await offlinePost('farm-events', data, 'fincapp_activities');
             activities.unshift({ ...data, id: Date.now() });
             renderActivityList(activities);
             showToast('Activity logged!', 'success');
@@ -93,8 +93,10 @@ function renderActivityList(activities) {
         return;
     }
 
-    const icons = { Feed: 'fa-seedling', Bath: 'fa-shower', Repair: 'fa-wrench',
-        Movement: 'fa-arrows-left-right', Milking: 'fa-cow', Deworming: 'fa-syringe', Other: 'fa-circle-dot' };
+    const icons = {
+        Feed: 'fa-seedling', Bath: 'fa-shower', Repair: 'fa-wrench',
+        Movement: 'fa-arrows-left-right', Milking: 'fa-cow', Deworming: 'fa-syringe', Other: 'fa-circle-dot'
+    };
 
     container.innerHTML = activities.map(a => {
         const icon = icons[a.event_type] || 'fa-circle-dot';
@@ -153,11 +155,12 @@ function openActivityForm(onSubmit) {
 
     document.getElementById('activity-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const { getCurrentUser } = await import('../auth.js');
         await onSubmit({
             event_type: document.getElementById('a-type').value,
             animal_id: document.getElementById('a-animal').value || null,
             description: document.getElementById('a-desc').value,
-            created_at: new Date().toISOString(),
+            user_id: getCurrentUser()?.id || null,
         });
     });
 }

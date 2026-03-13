@@ -124,7 +124,7 @@ export async function initDashboardLogic() {
     let vaccines = [];
 
     try {
-        animals = await apiService.get('livestock');
+        animals = await apiService.get('animals');
     } catch {
         animals = getLocal('fincapp_livestock');
     }
@@ -136,7 +136,7 @@ export async function initDashboardLogic() {
     }
 
     try {
-        activities = await apiService.get('activities?limit=5');
+        activities = await apiService.get('farm-events');
     } catch {
         activities = getLocal('fincapp_activities').slice(-5);
     }
@@ -173,9 +173,13 @@ export async function initDashboardLogic() {
 }
 
 function renderWeightChart(animals) {
-    const ctx = document.getElementById('weightTrendChart')?.getContext('2d');
-    if (!ctx || typeof Chart === 'undefined') return;
+    const canvas = document.getElementById('weightTrendChart');
+    if (!canvas || typeof Chart === 'undefined') return;
 
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
+
+    const ctx = canvas.getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -204,13 +208,17 @@ function renderWeightChart(animals) {
 }
 
 function renderHealthChart(animals) {
-    const ctx = document.getElementById('healthDistChart')?.getContext('2d');
-    if (!ctx || typeof Chart === 'undefined') return;
+    const canvas = document.getElementById('healthDistChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
 
     const safe = animals.filter(a => a.status === 'healthy' || a.status === 'safe').length || Math.max(1, animals.length - 2);
     const warning = animals.filter(a => a.status === 'warning').length || 1;
     const critical = animals.filter(a => a.status === 'critical').length || 1;
 
+    const ctx = canvas.getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: {

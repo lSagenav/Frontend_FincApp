@@ -8,7 +8,7 @@ import requests  # para llamar a OpenAI
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, origins=["http://127.0.0.1:5501", "http://localhost:8080", "http://localhost:5500", "http://127.0.0.1:5500"]) 
 
 inventory_db = []
 
@@ -27,9 +27,6 @@ def add_animal():
 @app.route('/api/livestock', methods=['GET'])
 def get_inventory():
     return jsonify(inventory_db)
-
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
 
 @app.route('/api/diagnosis', methods=['POST'])
 def get_diagnosis():
@@ -67,3 +64,6 @@ def get_diagnosis():
     
     except Exception as e:
         return jsonify({"diagnosis": "Could not get AI diagnosis. Check server logs."}), 500
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)

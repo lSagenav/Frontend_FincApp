@@ -7,6 +7,7 @@ import { showToast } from '../ui-utils.js';
 import { isAdmin } from '../auth.js';
 import { openGlobalModal, closeGlobalModal } from '../app.js';
 import { speak } from '../voice-logic.js';
+import { getCurrentUser } from '../auth.js';
 
 export function renderInventory() {
     return `
@@ -72,10 +73,7 @@ export async function initInventoryLogic() {
 
     // Load data
     try {
-        allAnimals = await fetchFromPython();
-        if (!allAnimals || allAnimals.length === 0) {
-            allAnimals = await apiService.get('livestock');
-        }
+        allAnimals = await apiService.get('animals');
     } catch {
         allAnimals = getLocal('fincapp_livestock');
     }
@@ -102,8 +100,7 @@ export async function initInventoryLogic() {
     // New animal button
     document.getElementById('btn-new-animal')?.addEventListener('click', () => {
         openAnimalForm(null, async (data) => {
-            const result = await offlinePost('livestock', data, 'fincapp_livestock');
-            await saveToPython(data);
+            const result = await offlinePost('animals', data, 'fincapp_livestock');
             showToast('Animal registered successfully!', 'success');
             speak(`Animal number ${data.tag_number} registered successful`);
             closeGlobalModal();
@@ -167,17 +164,24 @@ function renderTable(animals) {
     // Expose global helpers
     window.editAnimal = (tag, animal) => {
         openAnimalForm(animal, async (data) => {
-            await offlinePost(`livestock/${tag}`, data);
-            showToast('Animal updated', 'success');
-            speak(`Animal ${tag} updated successful.`);
-            closeGlobalModal();
+            try {
+                await apiService.put(`animals/${animal.id}`, data);
+                showToast('Animal updated', 'success');
+                speak(`Animal ${tag} updated successfully.`);
+                closeGlobalModal();
+                const idx = allAnimals.findIndex(a => a.id === animal.id);
+                if (idx >= 0) allAnimals[idx] = { ...allAnimals[idx], ...data };
+                renderTable(allAnimals);
+            } catch (err) {
+                showToast('Failed to update: ' + err.message, 'error');
+            }
         }, true);
     };
 
     window.deleteAnimal = async (id) => {
         if (!confirm('Delete this animal? This action cannot be undone.')) return;
         try {
-            await apiService.delete(`livestock/${id}`);
+            await apiService.delete(`animals/${id}`);
             deleteLocal('fincapp_livestock', id);
             showToast('Animal deleted', 'info');
             speak(`Animal Deleted from the inventory`);
@@ -241,11 +245,10 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
         e.preventDefault();
         const data = {
             tag_number: document.getElementById('f-tag').value,
-            tag: document.getElementById('f-tag').value,
             breed: document.getElementById('f-breed').value,
-            birth_date: document.getElementById('f-birth').value,
-            weight: parseFloat(document.getElementById('f-weight').value) || 0,
+            birth_date: document.getElementById('f-birth').value || null,
             status: document.getElementById('f-status').value,
+            user_id: getCurrentUser()?.id || null
         };
         await onSubmit(data);
     });

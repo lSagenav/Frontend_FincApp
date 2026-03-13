@@ -206,10 +206,12 @@ async function loginUser(email, password) {
         }
         return { success: false, message: result.message || 'Invalid credentials' };
     } catch (err) {
-        // OFFLINE FALLBACK: Demo accounts for testing
+        // OFFLINE FALLBACK: Demo accounts + locally registered users
+        const pendingUsers = JSON.parse(localStorage.getItem('fincapp_pending_users') || '[]'); 
         const demoUsers = [
             { id: 1, email: 'admin@farm.com', password: 'admin123', full_name: 'Admin User', role: 'admin', farm_name: 'Demo Farm' },
             { id: 2, email: 'worker@farm.com', password: 'worker123', full_name: 'Farm Worker', role: 'farmer', farm_name: 'Demo Farm' },
+            ...pendingUsers
         ];
         const user = demoUsers.find(u => u.email === email && u.password === password);
         if (user) {
@@ -224,9 +226,10 @@ async function loginUser(email, password) {
 async function registerUser(userData) {
     try {
         const result = await apiService.post('auth/register', userData);
-        return result.success
-            ? { success: true }
-            : { success: false, message: result.message };
+        if (result.message === 'User registered successfully') {
+            return { success: true };
+        }
+        return { success: false, message: result.message || 'Registration failed' };
     } catch (err) {
         // Offline: save to local pending
         const pending = JSON.parse(localStorage.getItem('fincapp_pending_users') || '[]');

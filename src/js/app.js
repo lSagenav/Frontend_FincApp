@@ -15,7 +15,7 @@ window.navigateTo = navigateTo;
 window.toggleVoice = toggleVoice;
 window.toggleTheme = toggleTheme;
 window.logout = () => {
-    speak(`Session closed. See you later`);
+    try { speak(`Session closed. See you later`); } catch (_) {}
     authLogout();
     showAuthScreen();
 };

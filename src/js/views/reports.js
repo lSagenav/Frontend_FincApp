@@ -82,12 +82,12 @@ export async function initReportsLogic() {
         try {
             let data = [];
             switch (type) {
-                case 'inventory': data = await safeGet('livestock', 'fincapp_livestock'); break;
-                case 'health':    data = await safeGet('health-records', 'fincapp_health_records'); break;
-                case 'weights':   data = await safeGet('weights', 'fincapp_weights'); break;
-                case 'activities':data = await safeGet('activities', 'fincapp_activities'); break;
+                case 'inventory': data = await safeGet('animals', 'fincapp_livestock'); break;
+                case 'health': data = await safeGet('health-records', 'fincapp_health_records'); break;
+                case 'weights': data = await safeGet('weights', 'fincapp_weights'); break;
+                case 'activities': data = await safeGet('farm-events', 'fincapp_activities'); break;
                 case 'full': {
-                    const inv = await safeGet('livestock', 'fincapp_livestock');
+                    const inv = await safeGet('animals', 'fincapp_livestock');
                     exportInventoryToPDF(inv);
                     return;
                 }

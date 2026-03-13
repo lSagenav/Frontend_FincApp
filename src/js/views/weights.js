@@ -6,6 +6,7 @@ import { calculateGDP } from '../calculations.js';
 import { showToast } from '../ui-utils.js';
 import { openGlobalModal, closeGlobalModal } from '../app.js';
 import { speak } from '../voice-logic.js';
+import { getCurrentUser } from '../auth.js';
 
 export function renderWeights() {
     return `
@@ -107,10 +108,14 @@ export async function initWeightsLogic() {
         const weight = parseFloat(document.getElementById('weight-value').value);
         const date = document.getElementById('weight-date').value;
 
-        const data = { animal_id: tag, animal_tag: tag, current_weight: weight, weighing_date: date };
+        const data = {
+            animal_id: tag,
+            current_weight: weight,
+            user_id: getCurrentUser()?.id || null
+        };
 
         // Calculate ADG if previous record exists
-        const prevLog = weightLogs.filter(w => w.animal_id === tag || w.animal_tag === tag).slice(-1)[0];
+        const prevLog = weightLogs.filter(w => String(w.animal_id) === String(tag)).slice(-1)[0];
         if (prevLog) {
             const adg = calculateGDP(weight, prevLog.current_weight, prevLog.weighing_date, date);
             const adgResult = document.getElementById('adg-result');
@@ -159,7 +164,7 @@ function renderWeightTable(logs) {
         const date = log.weighing_date ? new Date(log.weighing_date).toLocaleDateString('en-US') : '—';
         return `
         <tr>
-            <td class="font-bold">#${log.animal_tag || log.animal_id}</td>
+            <td class="font-bold">#${log.animal_id}</td>
             <td>${log.current_weight} kg</td>
             <td class="text-[var(--text-secondary)]">${date}</td>
             <td class="${perfClass} font-semibold">${adgDisplay}</td>
