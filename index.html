@@ -138,14 +138,27 @@
     </button>
 
     <!-- ===== TOAST CONTAINER ===== -->
+<<<<<<< HEAD
     <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- ===== GLOBAL MODAL ===== -->
     <div id="global-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+=======
+    <div id="toast-container" class="fixed z-[200] flex flex-col gap-2 pointer-events-none"
+         style="bottom:24px;left:50%;transform:translateX(-50%)"></div>
+
+    <!-- ===== GLOBAL MODAL ===== -->
+    <div id="global-modal" class="fixed inset-0 bg-black/60 z-[150] hidden items-center justify-center p-4"
+         style="-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">
+>>>>>>> master
         <div id="modal-content-wrapper" class="bg-[var(--bg-card)] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-modal-in">
         </div>
     </div>
 
     <script type="module" src="src/js/app.js"></script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> master

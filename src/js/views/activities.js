@@ -126,11 +126,19 @@ function openActivityForm(onSubmit) {
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+<<<<<<< HEAD
             <form id="activity-form" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Activity Type</label>
                         <select id="a-type" class="form-input" required>
+=======
+            <form id="activity-form" class="space-y-4" novalidate>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Activity Type</label>
+                        <select id="a-type" class="form-input">
+>>>>>>> master
                             ${ACTIVITY_TYPES.map(t => `<option>${t}</option>`).join('')}
                         </select>
                     </div>
@@ -141,7 +149,14 @@ function openActivityForm(onSubmit) {
                 </div>
                 <div>
                     <label class="form-label">Description</label>
+<<<<<<< HEAD
                     <textarea id="a-desc" class="form-input h-24 resize-none" placeholder="What was done?" required></textarea>
+=======
+                    <textarea id="a-desc" class="form-input h-24 resize-none" placeholder="What was done?"></textarea>
+                    <span class="field-error hidden" id="err-a-desc">
+                        <i class="fas fa-circle-exclamation mr-1"></i>Please describe what was done.
+                    </span>
+>>>>>>> master
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="closeModal()" class="btn-secondary flex-1">Cancel</button>
@@ -151,6 +166,7 @@ function openActivityForm(onSubmit) {
         </div>
     `);
 
+<<<<<<< HEAD
     document.getElementById('activity-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         await onSubmit({
@@ -161,3 +177,29 @@ function openActivityForm(onSubmit) {
         });
     });
 }
+=======
+    // Limpiar error al escribir
+    document.getElementById('a-desc')?.addEventListener('input', () => {
+        document.getElementById('a-desc').classList.remove('input-error');
+        document.getElementById('err-a-desc').classList.add('hidden');
+    });
+
+    document.getElementById('activity-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const desc = document.getElementById('a-desc').value.trim();
+
+        if (!desc) {
+            document.getElementById('a-desc').classList.add('input-error');
+            document.getElementById('err-a-desc').classList.remove('hidden');
+            return;
+        }
+
+        await onSubmit({
+            event_type: document.getElementById('a-type').value,
+            animal_id: document.getElementById('a-animal').value || null,
+            description: desc,
+            created_at: new Date().toISOString(),
+        });
+    });
+}
+>>>>>>> master

@@ -25,6 +25,7 @@ export function renderWeights() {
             <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
                 <i class="fas fa-weight-scale text-[var(--accent)]"></i> Quick Weight Entry
             </h3>
+<<<<<<< HEAD
             <form id="quick-weight-form" class="flex flex-wrap gap-3 items-end">
                 <div class="flex-1 min-w-32">
                     <label class="form-label">Animal Tag</label>
@@ -39,6 +40,31 @@ export function renderWeights() {
                     <input type="date" id="weight-date" class="form-input" required>
                 </div>
                 <div>
+=======
+            <form id="quick-weight-form" class="flex flex-wrap gap-3 items-start" novalidate>
+                <div class="flex-1 min-w-32">
+                    <label class="form-label">Animal Tag</label>
+                    <input type="text" id="weight-tag" class="form-input" placeholder="e.g. A-101">
+                    <span class="field-error hidden" id="err-weight-tag">
+                        <i class="fas fa-circle-exclamation mr-1"></i>Tag is required.
+                    </span>
+                </div>
+                <div class="flex-1 min-w-32">
+                    <label class="form-label">Weight (kg)</label>
+                    <input type="number" id="weight-value" class="form-input" placeholder="e.g. 450" min="1" step="0.1">
+                    <span class="field-error hidden" id="err-weight-value">
+                        <i class="fas fa-circle-exclamation mr-1"></i>Enter a valid weight (min 1 kg).
+                    </span>
+                </div>
+                <div class="flex-1 min-w-32">
+                    <label class="form-label">Date</label>
+                    <input type="date" id="weight-date" class="form-input">
+                    <span class="field-error hidden" id="err-weight-date">
+                        <i class="fas fa-circle-exclamation mr-1"></i>Date is required.
+                    </span>
+                </div>
+                <div class="pt-5">
+>>>>>>> master
                     <button type="submit" id="btn-quick-weight" class="btn-primary">
                         <i class="fas fa-floppy-disk mr-2"></i> Save
                     </button>
@@ -96,17 +122,58 @@ export async function initWeightsLogic() {
     const dateInput = document.getElementById('weight-date');
     if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
 
+<<<<<<< HEAD
     // Quick form submit
     document.getElementById('quick-weight-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
+=======
+    // Limpiar errores al escribir
+    ['weight-tag', 'weight-value', 'weight-date'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => {
+            document.getElementById(id).classList.remove('input-error');
+            document.getElementById('err-' + id)?.classList.add('hidden');
+        });
+    });
+
+    // Quick form submit
+    document.getElementById('quick-weight-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const tag = document.getElementById('weight-tag').value.trim();
+        const weightRaw = document.getElementById('weight-value').value;
+        const weight = parseFloat(weightRaw);
+        const date = document.getElementById('weight-date').value;
+        let hasError = false;
+
+        if (!tag) {
+            document.getElementById('weight-tag').classList.add('input-error');
+            document.getElementById('err-weight-tag').classList.remove('hidden');
+            hasError = true;
+        }
+        if (!weightRaw || weight < 1) {
+            document.getElementById('weight-value').classList.add('input-error');
+            document.getElementById('err-weight-value').classList.remove('hidden');
+            hasError = true;
+        }
+        if (!date) {
+            document.getElementById('weight-date').classList.add('input-error');
+            document.getElementById('err-weight-date').classList.remove('hidden');
+            hasError = true;
+        }
+        if (hasError) return;
+
+>>>>>>> master
         const btn = document.getElementById('btn-quick-weight');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i>';
 
+<<<<<<< HEAD
         const tag = document.getElementById('weight-tag').value;
         const weight = parseFloat(document.getElementById('weight-value').value);
         const date = document.getElementById('weight-date').value;
 
+=======
+>>>>>>> master
         const data = { animal_id: tag, animal_tag: tag, current_weight: weight, weighing_date: date };
 
         // Calculate ADG if previous record exists
@@ -166,4 +233,8 @@ function renderWeightTable(logs) {
             <td>${perfClass ? `<span class="${perfClass.includes('green') ? 'badge-safe' : perfClass.includes('red') ? 'badge-critical' : 'badge-warning'}">${logs[idx + 1] ? calculateGDP(log.current_weight, logs[idx + 1].current_weight, logs[idx + 1].weighing_date, log.weighing_date).performance : '—'}</span>` : '—'}</td>
         </tr>`;
     }).join('');
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

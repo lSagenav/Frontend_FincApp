@@ -198,18 +198,32 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+<<<<<<< HEAD
             <form id="animal-form" class="space-y-4">
+=======
+            <form id="animal-form" class="space-y-4" novalidate>
+>>>>>>> master
                 <div>
                     <label class="form-label">Tag Number</label>
                     <input type="text" id="f-tag" class="form-input" placeholder="e.g. A-101" required
                         value="${animal?.tag_number || animal?.tag || ''}">
+<<<<<<< HEAD
+=======
+                    <span class="field-error hidden" id="err-f-tag">
+                        <i class="fas fa-circle-exclamation mr-1"></i>Tag number is required.
+                    </span>
+>>>>>>> master
                 </div>
                 <div>
                     <label class="form-label">Breed</label>
                     <input type="text" id="f-breed" class="form-input" placeholder="e.g. Brahman, Angus"
                         value="${animal?.breed || ''}">
                 </div>
+<<<<<<< HEAD
                 <div class="grid grid-cols-2 gap-4">
+=======
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+>>>>>>> master
                     <div>
                         <label class="form-label">Birth Date</label>
                         <input type="date" id="f-birth" class="form-input"
@@ -219,6 +233,12 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
                         <label class="form-label">Initial Weight (kg)</label>
                         <input type="number" id="f-weight" class="form-input" placeholder="e.g. 280" min="1"
                             value="${animal?.weight || ''}">
+<<<<<<< HEAD
+=======
+                        <span class="field-error hidden" id="err-f-weight">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Weight must be greater than 0.
+                        </span>
+>>>>>>> master
                     </div>
                 </div>
                 <div>
@@ -237,6 +257,7 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
         </div>
     `);
 
+<<<<<<< HEAD
     document.getElementById('animal-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -245,8 +266,49 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
             breed: document.getElementById('f-breed').value,
             birth_date: document.getElementById('f-birth').value,
             weight: parseFloat(document.getElementById('f-weight').value) || 0,
+=======
+    // Limpiar errores al escribir
+    document.getElementById('f-tag')?.addEventListener('input', () => {
+        document.getElementById('f-tag').classList.remove('input-error');
+        document.getElementById('err-f-tag').classList.add('hidden');
+    });
+    document.getElementById('f-weight')?.addEventListener('input', () => {
+        document.getElementById('f-weight').classList.remove('input-error');
+        document.getElementById('err-f-weight').classList.add('hidden');
+    });
+
+    document.getElementById('animal-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let hasError = false;
+
+        const tag = document.getElementById('f-tag').value.trim();
+        const weight = parseFloat(document.getElementById('f-weight').value);
+
+        if (!tag) {
+            document.getElementById('f-tag').classList.add('input-error');
+            document.getElementById('err-f-tag').classList.remove('hidden');
+            hasError = true;
+        }
+        if (document.getElementById('f-weight').value && weight <= 0) {
+            document.getElementById('f-weight').classList.add('input-error');
+            document.getElementById('err-f-weight').classList.remove('hidden');
+            hasError = true;
+        }
+        if (hasError) return;
+
+        const data = {
+            tag_number: tag,
+            tag: tag,
+            breed: document.getElementById('f-breed').value,
+            birth_date: document.getElementById('f-birth').value,
+            weight: weight || 0,
+>>>>>>> master
             status: document.getElementById('f-status').value,
         };
         await onSubmit(data);
     });
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

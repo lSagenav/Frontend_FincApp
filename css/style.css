@@ -234,6 +234,10 @@ html.dark .badge-critical { background: #7f1d1d; color: #f87171; }
     animation: toast-in 0.3s ease-out;
     min-width: 280px;
     max-width: 400px;
+<<<<<<< HEAD
+=======
+    word-break: break-word;
+>>>>>>> master
 }
 .toast-success { background: #15803d; color: white; }
 .toast-error { background: #b91c1c; color: white; }
@@ -252,6 +256,49 @@ html.dark .badge-critical { background: #7f1d1d; color: #f87171; }
 }
 .animate-modal-in { animation: modal-in 0.25s ease-out; }
 
+<<<<<<< HEAD
+=======
+#modal-content-wrapper {
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== TOAST + MODAL RESPONSIVE ===== */
+@media (max-width: 640px) {
+    #toast-container {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 16px !important;
+        transform: none !important;
+        align-items: stretch;
+    }
+    .toast {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        font-size: 12px;
+        padding: 11px 14px;
+        border-radius: 10px;
+    }
+    #global-modal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
+    #modal-content-wrapper {
+        border-radius: 20px 20px 0 0 !important;
+        max-height: 92vh;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    @keyframes modal-in {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+>>>>>>> master
 /* ===== PAGE TRANSITIONS ===== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -355,4 +402,8 @@ html.dark .badge-critical { background: #7f1d1d; color: #f87171; }
     .sidebar, #voice-fab, #toast-container, header { display: none !important; }
     #main-wrapper { margin-left: 0 !important; }
     body { background: white; color: black; }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

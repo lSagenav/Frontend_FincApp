@@ -79,15 +79,37 @@ function renderLoginForm() {
             </div>
 
             <!-- Login Form -->
+<<<<<<< HEAD
             <div id="login-form-section">
                 <form id="login-form" class="space-y-4">
                     <div>
                         <label class="form-label">Email</label>
                         <input type="email" id="login-email" class="form-input" placeholder="you@farm.com" required>
+=======
+            <!-- Login Form -->
+            <div id="login-form-section">
+                <form id="login-form" class="space-y-4" novalidate>
+                    <div>
+                        <label class="form-label">Email</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="you@farm.com" required>
+                        <span class="field-error hidden" id="err-login-email">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Please enter a valid email address.
+                        </span>
+>>>>>>> master
                     </div>
                     <div>
                         <label class="form-label">Password</label>
                         <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+<<<<<<< HEAD
+=======
+                        <span class="field-error hidden" id="err-login-password">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Password is required.
+                        </span>
+                    </div>
+                    <div id="login-server-error" class="hidden field-error-box">
+                        <i class="fas fa-triangle-exclamation mr-2"></i>
+                        <span id="login-server-error-text">Invalid email or password.</span>
+>>>>>>> master
                     </div>
                     <button type="submit" id="btn-login" class="btn-primary w-full mt-2">
                         <i class="fas fa-right-to-bracket mr-2"></i> Sign In
@@ -100,14 +122,30 @@ function renderLoginForm() {
 
             <!-- Register Form -->
             <div id="register-form-section" class="hidden">
+<<<<<<< HEAD
                 <form id="register-form" class="space-y-4">
                     <div>
                         <label class="form-label">Full Name</label>
                         <input type="text" id="reg-name" class="form-input" placeholder="Juan Pérez" required>
+=======
+                <form id="register-form" class="space-y-4" novalidate>
+                    <div>
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="reg-name" class="form-input" placeholder="Juan Pérez" required>
+                        <span class="field-error hidden" id="err-reg-name">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Full name is required.
+                        </span>
+>>>>>>> master
                     </div>
                     <div>
                         <label class="form-label">Email</label>
                         <input type="email" id="reg-email" class="form-input" placeholder="you@farm.com" required>
+<<<<<<< HEAD
+=======
+                        <span class="field-error hidden" id="err-reg-email">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Please enter a valid email address.
+                        </span>
+>>>>>>> master
                     </div>
                     <div>
                         <label class="form-label">Farm Name</label>
@@ -120,6 +158,16 @@ function renderLoginForm() {
                     <div>
                         <label class="form-label">Password</label>
                         <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" required minlength="6">
+<<<<<<< HEAD
+=======
+                        <span class="field-error hidden" id="err-reg-password">
+                            <i class="fas fa-circle-exclamation mr-1"></i>Password must be at least 6 characters.
+                        </span>
+                    </div>
+                    <div id="register-server-error" class="hidden field-error-box">
+                        <i class="fas fa-triangle-exclamation mr-2"></i>
+                        <span id="register-server-error-text">Registration failed. Please try again.</span>
+>>>>>>> master
                     </div>
                     <button type="submit" id="btn-register" class="btn-primary w-full mt-2">
                         <i class="fas fa-user-plus mr-2"></i> Create Account
@@ -142,6 +190,7 @@ function renderLoginForm() {
             : 'flex-1 py-2 rounded-lg text-sm font-bold transition-all text-[var(--text-secondary)]';
     };
 
+<<<<<<< HEAD
     // Login submit
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -151,6 +200,72 @@ function renderLoginForm() {
 
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+=======
+    // ===== HELPERS DE VALIDACIÓN =====
+    // Muestra el mensaje de error debajo del campo y pone borde rojo
+    function showFieldError(inputId, errorId) {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(errorId);
+        if (input) input.classList.add('input-error');
+        if (error) error.classList.remove('hidden');
+    }
+
+    // Limpia el error de un campo cuando el usuario empieza a corregir
+    function clearFieldError(inputId, errorId) {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(errorId);
+        if (input) input.classList.remove('input-error');
+        if (error) error.classList.add('hidden');
+    }
+
+    function showServerError(boxId, textId, message) {
+        const box = document.getElementById(boxId);
+        const text = document.getElementById(textId);
+        if (box) box.classList.remove('hidden');
+        if (text) text.textContent = message;
+    }
+
+    function hideServerError(boxId) {
+        document.getElementById(boxId)?.classList.add('hidden');
+    }
+
+    // Limpiar errores al escribir
+    document.getElementById('login-email')?.addEventListener('input', () => {
+        clearFieldError('login-email', 'err-login-email');
+        hideServerError('login-server-error');
+    });
+    document.getElementById('login-password')?.addEventListener('input', () => {
+        clearFieldError('login-password', 'err-login-password');
+        hideServerError('login-server-error');
+    });
+    document.getElementById('reg-name')?.addEventListener('input', () => clearFieldError('reg-name', 'err-reg-name'));
+    document.getElementById('reg-email')?.addEventListener('input', () => clearFieldError('reg-email', 'err-reg-email'));
+    document.getElementById('reg-password')?.addEventListener('input', () => clearFieldError('reg-password', 'err-reg-password'));
+
+    // Login submit
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validación por campo
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        let hasError = false;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showFieldError('login-email', 'err-login-email');
+            hasError = true;
+        }
+        if (!password) {
+            showFieldError('login-password', 'err-login-password');
+            hasError = true;
+        }
+        if (hasError) return;
+
+        const btn = document.getElementById('btn-login');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Signing in...';
+        hideServerError('login-server-error');
+>>>>>>> master
 
         const result = await loginUser(email, password);
 
@@ -159,6 +274,11 @@ function renderLoginForm() {
             speak(`Welcome ${result.user.full_name || 'to the system'}`);
             onLoginCallback?.(result.user);
         } else {
+<<<<<<< HEAD
+=======
+            // Error de credenciales — mostrar debajo del form, no solo en toast
+            showServerError('login-server-error', 'login-server-error-text', result.message || 'Invalid email or password.');
+>>>>>>> master
             showToast(result.message || 'Login failed', 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-right-to-bracket mr-2"></i> Sign In';
@@ -168,6 +288,7 @@ function renderLoginForm() {
     // Register submit
     document.getElementById('register-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+<<<<<<< HEAD
         const btn = document.getElementById('btn-register');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Creating account...';
@@ -178,6 +299,40 @@ function renderLoginForm() {
             farm_name: document.getElementById('reg-farm').value,
             phone: document.getElementById('reg-phone').value,
             password: document.getElementById('reg-password').value,
+=======
+
+        // Validación por campo
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+        let hasError = false;
+
+        if (!name) {
+            showFieldError('reg-name', 'err-reg-name');
+            hasError = true;
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showFieldError('reg-email', 'err-reg-email');
+            hasError = true;
+        }
+        if (!password || password.length < 6) {
+            showFieldError('reg-password', 'err-reg-password');
+            hasError = true;
+        }
+        if (hasError) return;
+
+        const btn = document.getElementById('btn-register');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Creating account...';
+        hideServerError('register-server-error');
+
+        const userData = {
+            full_name: name,
+            email: email,
+            farm_name: document.getElementById('reg-farm').value,
+            phone: document.getElementById('reg-phone').value,
+            password: password,
+>>>>>>> master
             role: 'farmer'
         };
 
@@ -188,6 +343,10 @@ function renderLoginForm() {
             speak(`Account successfully created. Please log in`);
             window.switchAuthTab('login');
         } else {
+<<<<<<< HEAD
+=======
+            showServerError('register-server-error', 'register-server-error-text', result.message || 'Registration failed. Please try again.');
+>>>>>>> master
             showToast(result.message || 'Registration failed', 'error');
         }
 
@@ -234,4 +393,8 @@ async function registerUser(userData) {
         localStorage.setItem('fincapp_pending_users', JSON.stringify(pending));
         return { success: true }; // Will sync when online
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master
