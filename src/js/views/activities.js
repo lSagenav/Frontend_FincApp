@@ -142,6 +142,10 @@ function openActivityForm(onSubmit) {
                     </div>
                 </div>
                 <div>
+                    <label class="form-label">Date</label>
+                    <input type="date" id="a-date" class="form-input" required>
+                </div>
+                <div>
                     <label class="form-label">Description</label>
                     <textarea id="a-desc" class="form-input h-24 resize-none" placeholder="What was done?"></textarea>
                     <span class="field-error hidden" id="err-a-desc">
@@ -156,6 +160,8 @@ function openActivityForm(onSubmit) {
         </div>
     `);
 
+    const aDate = document.getElementById('a-date');
+    if (aDate) aDate.value = new Date().toISOString().split('T')[0];
     document.getElementById('a-desc')?.addEventListener('input', () => {
         document.getElementById('a-desc').classList.remove('input-error');
         document.getElementById('err-a-desc').classList.add('hidden');
@@ -177,6 +183,7 @@ function openActivityForm(onSubmit) {
             animal_id: document.getElementById('a-animal').value || null,
             description: desc,
             user_id: getCurrentUser()?.id || null,
+            created_at: document.getElementById('a-date').value || new Date().toISOString(),
         });
     });
 }

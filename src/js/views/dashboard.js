@@ -123,43 +123,50 @@ export async function initDashboardLogic() {
     let activities = [];
     let vaccines = [];
 
-    try {
-        animals = await apiService.get('animals');
-    } catch {
-        animals = getLocal('fincapp_livestock');
-    }
-
-    try {
-        vaccines = await apiService.get('vaccines');
-    } catch {
-        vaccines = getLocal('fincapp_vaccines');
-    }
-
-    try {
-        activities = await apiService.get('farm-events');
-    } catch {
-        activities = getLocal('fincapp_activities').slice(-5);
-    }
+    
 
     // KPIs
+    // KPIs — show loading first
     const kpiTotal = document.getElementById('kpi-total');
-    if (kpiTotal) kpiTotal.textContent = animals.length;
-
-    const criticalCount = animals.filter(a => a.status === 'critical').length;
     const kpiAlerts = document.getElementById('kpi-alerts');
-    if (kpiAlerts) kpiAlerts.textContent = criticalCount;
+    const kpiVaccines = document.getElementById('kpi-vaccines');
+    const kpiAdg = document.getElementById('kpi-adg');
 
+    if (kpiTotal) kpiTotal.textContent = '...';
+    if (kpiAlerts) kpiAlerts.textContent = '...';
+    if (kpiVaccines) kpiVaccines.textContent = '...';
+    if (kpiAdg) kpiAdg.textContent = '0.72';
+
+    // Load all data in parallel
+    const [animalsResult, vaccinesResult, activitiesResult] = await Promise.allSettled([
+        apiService.get('animals'),
+        apiService.get('vaccines'),
+        apiService.get('farm-events')
+    ]);
+
+    animals = animalsResult.status === 'fulfilled' && Array.isArray(animalsResult.value)
+        ? animalsResult.value : getLocal('fincapp_livestock');
+
+    vaccines = vaccinesResult.status === 'fulfilled' && Array.isArray(vaccinesResult.value)
+        ? vaccinesResult.value : getLocal('fincapp_vaccines');
+
+    activities = activitiesResult.status === 'fulfilled' && Array.isArray(activitiesResult.value)
+        ? activitiesResult.value : getLocal('fincapp_activities').slice(-5);
+
+    // Now update KPIs with real data
     const today = new Date();
+
+    const criticalAnimals = animals.filter(a => a.status === 'critical').length;
+    const overdueVaccines = vaccines.filter(v => new Date(v.next_date) < today).length;
+
+    if (kpiTotal) kpiTotal.textContent = animals.length;
+    if (kpiAlerts) kpiAlerts.textContent = criticalAnimals + overdueVaccines;
+
     const vaccinesDue = vaccines.filter(v => {
         const diff = (new Date(v.next_date) - today) / (1000 * 60 * 60 * 24);
         return diff >= 0 && diff <= 7;
     }).length;
-    const kpiVaccines = document.getElementById('kpi-vaccines');
     if (kpiVaccines) kpiVaccines.textContent = vaccinesDue;
-
-    // Avg ADG mock calculation
-    const kpiAdg = document.getElementById('kpi-adg');
-    if (kpiAdg) kpiAdg.textContent = '0.72';
 
     // Charts
     renderWeightChart(animals);
