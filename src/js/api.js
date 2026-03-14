@@ -214,6 +214,6 @@ export function updateOnlineStatus() {
 // ===== HELPERS =====
 function authHeaders() {
     const session = JSON.parse(localStorage.getItem('fincapp_session') || '{}');
-    const token = session.token || session.user?.token;
+    const token = session.token || session.user?.token; 
     return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
