@@ -40,7 +40,7 @@ export function exportInventoryToPDF(data, type = 'inventory') {
     }
 
     const { jsPDF } = window.jspdf || { jsPDF };
-    const doc = new jsPDF();
+    const doc = new jsPDF();    
 
     // Header
     doc.setFillColor(45, 122, 45);
