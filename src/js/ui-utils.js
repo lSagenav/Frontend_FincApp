@@ -58,15 +58,63 @@ export function exportInventoryToPDF(data, type = 'inventory') {
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString('en-US')}`, 140, 22);
 
-    // Determine columns based on type
-    let head = [['#', 'Tag', 'Breed', 'Status', 'Weight']];
-    let body = data.map((item, i) => [
-        i + 1,
-        item.tag_number || item.tag || item.animal_id || '—',
-        item.breed || item.vaccine_name || item.event_type || '—',
-        item.status || item.alert_level || '—',
-        item.weight || item.current_weight || '—'
-    ]);
+    // Determine columns and data based on type
+    let head, body;
+
+    switch (type) {
+        case 'inventory':
+        case 'animals':
+            head = [['#', 'Tag', 'Breed', 'Birth Date', 'Status', 'Last Weight']];
+            body = data.map((item, i) => [
+                i + 1,
+                item.tag_number || item.tag || '—',
+                item.breed || '—',
+                item.birth_date ? new Date(item.birth_date).toLocaleDateString('en-US') : '—',
+                item.status || 'healthy',
+                item.current_weight ? `${item.current_weight} kg` : item.weight ? `${item.weight} kg` : '—'
+            ]);
+            break;
+        case 'weights':
+            head = [['#', 'Animal Tag', 'Weight (kg)', 'Date', 'Recorded By']];
+            body = data.map((item, i) => [
+                i + 1,
+                item.animal_id || '—',
+                item.current_weight || '—',
+                item.weighing_date ? new Date(item.weighing_date).toLocaleDateString('en-US') : '—',
+                item.user_id || '—'
+            ]);
+            break;
+        case 'health':
+            head = [['#', 'Animal', 'Medication', 'Alert Level', 'Date', 'AI Diagnosis']];
+            body = data.map((item, i) => [
+                i + 1,
+                item.animal_id || '—',
+                item.medication_name || '—',
+                item.alert_level || 'low',
+                item.event_date ? new Date(item.event_date).toLocaleDateString('en-US') : '—',
+                item.ai_diagnosis || '—'
+            ]);
+            break;
+        case 'activities':
+            head = [['#', 'Animal', 'Type', 'Description', 'Date']];
+            body = data.map((item, i) => [
+                i + 1,
+                item.animal_id || '—',
+                item.event_type || '—',
+                item.description || '—',
+                item.created_at ? new Date(item.created_at).toLocaleDateString('en-US') : '—'
+            ]);
+            break;
+        default:
+            head = [['#', 'Tag', 'Breed', 'Status', 'Weight']];
+            body = data.map((item, i) => [
+                i + 1,
+                item.tag_number || item.tag || item.animal_id || '—',
+                item.breed || item.vaccine_name || item.event_type || '—',
+                item.status || item.alert_level || '—',
+                item.weight || item.current_weight ? `${item.weight || item.current_weight} kg` : '—'
+            ]);
+    }
 
     if (typeof doc.autoTable === 'function') {
         doc.autoTable({

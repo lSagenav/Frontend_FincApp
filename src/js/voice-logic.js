@@ -104,7 +104,7 @@ async function processVoiceCommand(text) {
 
     try {
         const aiResponse = await interpretWithOpenAI(text);
-        await executeAICommand(aiResponse);
+        await executeAICommand(aiResponse, text);
     } catch (err) {
         console.warn('[Voice] OpenAI unavailable:', err);
         speak('Command not understood. Please try again.');
@@ -172,7 +172,7 @@ async function interpretWithOpenAI(userText) {
     return await response.json();
 }
 
-async function executeAICommand(command) {
+async function executeAICommand(command, originalText = '') {
     console.log('[Voice] AI command received:', JSON.stringify(command));
 
     const message = command.response || command.message || 'Command processed.';
@@ -268,11 +268,17 @@ async function executeAICommand(command) {
         case 'get_advice':
         case 'get_farm_tip': {
             try {
-                const question = command.params?.description || 'general farm health tip';
+                const question = command.params?.description || command.params?.question || originalText || 'general farm health tip';
+
                 const res = await fetch('http://localhost:5000/api/advice', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
+                    body: JSON.stringify({
+                        question: question,
+                        tag: command.params?.tag || '',
+                        breed: command.params?.breed || '',
+                        weight: command.params?.weight || ''
+                    })
                 });
                 const result = await res.json();
                 showToast(`💡 ${result.advice}`, 'info');
@@ -340,16 +346,26 @@ async function executeAICommand(command) {
         case 'get_advice':
         case 'get_farm_tip': {
             try {
-                const res = await fetch('http://localhost:5000/api/diagnosis', {
+                // Get the original transcript from the toast or use response as fallback
+                const fullTranscript = document.querySelector('#toast-container span')?.textContent?.replace('🎤 "', '').replace('"', '') || '';
+                const question = command.params?.description || command.params?.question || fullTranscript || 'general farm health tip';
+
+                const res = await fetch('http://localhost:5000/api/advice', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tag: 'general', breed: 'general', weight: 300 })
+                    body: JSON.stringify({
+                        question: question,
+                        tag: command.params?.tag || '',
+                        breed: command.params?.breed || '',
+                        weight: command.params?.weight || ''
+                    })
                 });
                 const result = await res.json();
-                showToast(`💡 ${result.diagnosis}`, 'info');
-                speak(result.diagnosis);
+                showToast(`💡 ${result.advice}`, 'info');
+                speak(result.advice);
             } catch {
                 speak('Could not get advice right now. Please try again.');
+                showToast('Could not get advice', 'warning');
             }
             break;
         }

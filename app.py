@@ -152,6 +152,22 @@ def get_advice():
         return jsonify({"advice": "API key not configured on server."}), 500
     
     try:
+        question = data.get('question', '')
+        animal_tag = data.get('tag', '')
+        animal_breed = data.get('breed', '')
+        animal_weight = data.get('weight', '')
+
+        # Build context-aware prompt
+        context = ""
+        if animal_tag:
+            context += f"Animal tag: {animal_tag}. "
+        if animal_breed:
+            context += f"Breed: {animal_breed}. "
+        if animal_weight:
+            context += f"Weight: {animal_weight}kg. "
+        if question:
+            context += f"Problem described: {question}"
+
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={
@@ -160,15 +176,21 @@ def get_advice():
             },
             json={
                 "model": "gpt-4o-mini",
-                "max_tokens": 150,
+                "max_tokens": 200,
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are an expert veterinarian for Colombian livestock farms. Give short, practical advice in English in maximum 3 sentences."
+                        "content": """You are an expert veterinarian specializing in Colombian livestock farming (cattle, bovines).
+                        Your role is to give specific, actionable advice based on the exact problem described.
+                        - Always address the specific symptoms or situation mentioned
+                        - Give concrete recommendations (medications, treatments, actions)
+                        - Mention when to call a real vet urgently
+                        - Keep response under 4 sentences
+                        - Respond in English"""
                     },
                     {
                         "role": "user",
-                        "content": data.get('question', 'Give me a general farm health tip')
+                        "content": context if context else "Give me a practical farm health tip for Colombian cattle."
                     }
                 ]
             }
