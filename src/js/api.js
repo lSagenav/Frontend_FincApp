@@ -4,7 +4,7 @@
  * Supports both Flask (Python) and Express (Node.js) backends.
  */
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = 'https://backend-fincapp-1.onrender.com/api';
 const PYTHON_URL = 'http://localhost:5000/api';
 const OFFLINE_QUEUE_KEY = 'fincapp_offline_queue';
 

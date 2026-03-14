@@ -81,23 +81,20 @@ export async function initHealthLogic() {
     let healthRecords = [];
     let animals = [];
 
-    try {
-        vaccines = await apiService.get('vaccines');
-    } catch {
-        vaccines = getLocal('fincapp_vaccines');
-    }
+    const [vaccinesResult, healthResult, animalsResult] = await Promise.allSettled([
+        apiService.get('vaccines'),
+        apiService.get('health-records'),
+        apiService.get('animals')
+    ]);
 
-    try {
-        healthRecords = await apiService.get('health-records');
-    } catch {
-        healthRecords = getLocal('fincapp_health_records');
-    }
+    vaccines = vaccinesResult.status === 'fulfilled' && Array.isArray(vaccinesResult.value)
+        ? vaccinesResult.value : getLocal('fincapp_vaccines');
 
-    try {
-        animals = await apiService.get('animals')
-    } catch {
-        animals = getLocal('fincapp_livestock');
-    }
+    healthRecords = healthResult.status === 'fulfilled' && Array.isArray(healthResult.value)
+        ? healthResult.value : getLocal('fincapp_health_records');
+
+    animals = animalsResult.status === 'fulfilled' && Array.isArray(animalsResult.value)
+        ? animalsResult.value : getLocal('fincapp_livestock');
 
     renderVaccineList(vaccines);
     renderHealthTable(healthRecords);

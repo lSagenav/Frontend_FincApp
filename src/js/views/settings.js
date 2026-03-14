@@ -37,9 +37,59 @@ export function renderSettings() {
     const darkOn = localStorage.getItem('fincapp_theme') === 'dark';
     const apiKey = localStorage.getItem('fincapp_openai_key') || '';
     const pendingCount = getPendingCount();
+    const user = JSON.parse(localStorage.getItem('fincapp_session') || '{}');
 
     return `
     <div class="max-w-2xl mx-auto space-y-6">
+
+    <!-- User Profile -->
+        <div class="card">
+            <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-user text-[var(--accent)]"></i> My Profile
+            </h2>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-[var(--border-color)]">
+                    <p class="text-sm text-[var(--text-secondary)]">Full Name</p>
+                    <p class="font-semibold text-sm">${user.full_name || '—'}</p>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-[var(--border-color)]">
+                    <p class="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p class="font-semibold text-sm">${user.email || '—'}</p>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-[var(--border-color)]">
+                    <p class="text-sm text-[var(--text-secondary)]">Farm</p>
+                    <p class="font-semibold text-sm">${user.farm_name || '—'}</p>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                    <p class="text-sm text-[var(--text-secondary)]">Role</p>
+                    <span class="${user.role === 'admin' ? 'badge-critical' : 'badge-safe'}">${user.role || 'farmer'}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card">
+            <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                <i class="fas fa-lock text-[var(--accent)]"></i> Change Password
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="setting-current-password" class="form-input" placeholder="••••••••">
+                </div>
+                <div>
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="setting-new-password" class="form-input" placeholder="Min 6 characters">
+                </div>
+                <div>
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" id="setting-confirm-password" class="form-input" placeholder="Repeat new password">
+                </div>
+                <button id="btn-change-password" class="btn-primary w-full">
+                    <i class="fas fa-key mr-2"></i> Update Password
+                </button>
+            </div>
+        </div>
 
         <div class="card">
             <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
@@ -167,6 +217,40 @@ export function initSettingsLogic() {
                 if (!keysToKeep.includes(key)) localStorage.removeItem(key);
             });
             showToast('Local cache cleared', 'success');
+        }
+    });
+
+    // Change password
+    document.getElementById('btn-change-password')?.addEventListener('click', async () => {
+        const current = document.getElementById('setting-current-password').value;
+        const newPass = document.getElementById('setting-new-password').value;
+        const confirm = document.getElementById('setting-confirm-password').value;
+
+        if (!current || !newPass || !confirm) {
+            showToast('Please fill in all password fields', 'warning');
+            return;
+        }
+        if (newPass !== confirm) {
+            showToast('New passwords do not match', 'error');
+            return;
+        }
+        if (newPass.length < 6) {
+            showToast('Password must be at least 6 characters', 'error');
+            return;
+        }
+
+        try {
+            const user = JSON.parse(localStorage.getItem('fincapp_session') || '{}');
+            await apiService.put(`user/${user.id}/password`, {
+                current_password: current,
+                new_password: newPass
+            });
+            showToast('Password updated successfully!', 'success');
+            document.getElementById('setting-current-password').value = '';
+            document.getElementById('setting-new-password').value = '';
+            document.getElementById('setting-confirm-password').value = '';
+        } catch (err) {
+            showToast('Failed to update password: ' + err.message, 'error');
         }
     });
 }
