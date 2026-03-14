@@ -162,7 +162,7 @@ function parseLocalCommand(text) {
 
 // ===== OPENAI INTEGRATION =====
 async function interpretWithOpenAI(userText) {
-    const response = await fetch('http://localhost:5000/api/voice-command', {
+    const response = await fetch('https://fincapp-flask.onrender.com/api/voice-command', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command: userText })
@@ -270,7 +270,7 @@ async function executeAICommand(command, originalText = '') {
             try {
                 const question = command.params?.description || command.params?.question || originalText || 'general farm health tip';
 
-                const res = await fetch('http://localhost:5000/api/advice', {
+                const res = await fetch('https://fincapp-flask.onrender.com/api/advice', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -397,7 +397,7 @@ async function executeAICommand(command, originalText = '') {
 // ===== AI DIAGNOSIS (for health module) =====
 export async function getAIDiagnosis(animalData) {
     try {
-        const response = await fetch('http://localhost:5000/api/diagnosis', {
+        const response = await fetch('https://fincapp-flask.onrender.com/api/diagnosis', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(animalData)
