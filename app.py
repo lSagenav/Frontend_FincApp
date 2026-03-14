@@ -84,6 +84,8 @@ def voice_command():
                         "registrar animal etiqueta 200 raza holstein nacimiento 15 de octubre de 2025 peso 120 kg" → {"action":"register_animal","params":{"tag":"200","breed":"holstein","birth_date":"2025-10-15","weight":"120"},"response":"Opening animal registration form."}
                         "agregar vaca etiqueta 305 raza brahman peso 350 kilos" → {"action":"register_animal","params":{"tag":"305","breed":"brahman","birth_date":"","weight":"350"},"response":"Opening animal registration form."}
                         "editar animal 200" → {"action":"edit_animal","params":{"tag":"200"},"response":"Searching animal 200."}
+                        "editar animal 200" → {"action":"edit_animal","params":{"tag":"200"},"response":"Searching animal 200."}
+
 
                         Weights:
                         "registrar peso animal 200 480 kilos" → {"action":"register_weight","params":{"tag":"200","weight":"480"},"response":"Recording 480kg for animal 200."}

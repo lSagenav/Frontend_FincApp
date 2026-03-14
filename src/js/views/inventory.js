@@ -68,12 +68,21 @@ export function renderInventory() {
     `;
 }
 
+let allAnimals = [];
+
 export async function initInventoryLogic() {
-    let allAnimals = [];
+
+    // Show loading state
+    const tbody = document.getElementById('livestock-table-body');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-[var(--text-secondary)]">
+        <i class="fas fa-spinner animate-spin text-2xl mb-3 block"></i>
+        Loading livestock data...
+    </td></tr>`;
 
     // Load data
     try {
-        allAnimals = await apiService.get('animals');
+        const result = await apiService.get('animals');
+        allAnimals = Array.isArray(result) ? result : [];
     } catch {
         allAnimals = getLocal('fincapp_livestock');
     }
@@ -151,7 +160,7 @@ function renderTable(animals) {
             <td><span class="${badgeClass}">${status}</span></td>
             <td class="text-right">
                 <div class="flex items-center justify-end gap-2">
-                    <button onclick="editAnimal('${tag}', ${JSON.stringify(animal).replace(/'/g, "\\'")})" 
+                    <button onclick="editAnimal('${tag}', ${animal.id})"
                         class="text-[var(--accent)] hover:text-[var(--accent-dark)] transition text-sm px-2 py-1 rounded-lg hover:bg-[var(--accent-light)]">
                         <i class="fas fa-pen"></i>
                     </button>
@@ -162,14 +171,17 @@ function renderTable(animals) {
     }).join('');
 
     // Expose global helpers
-    window.editAnimal = (tag, animal) => {
+    window.editAnimal = (tag, animalId) => {
+        const animal = allAnimals.find(a => a.id === animalId);
+        if (!animal) return showToast('Animal not found', 'error');
+
         openAnimalForm(animal, async (data) => {
             try {
-                await apiService.put(`animals/${animal.id}`, data);
+                await apiService.put(`animals/${animalId}`, data);
                 showToast('Animal updated', 'success');
                 speak(`Animal ${tag} updated successfully.`);
                 closeGlobalModal();
-                const idx = allAnimals.findIndex(a => a.id === animal.id);
+                const idx = allAnimals.findIndex(a => a.id === animalId);
                 if (idx >= 0) allAnimals[idx] = { ...allAnimals[idx], ...data };
                 renderTable(allAnimals);
             } catch (err) {
@@ -220,7 +232,7 @@ function openAnimalForm(animal, onSubmit, isEdit = false) {
                     <div>
                         <label class="form-label">Birth Date</label>
                         <input type="date" id="f-birth" class="form-input"
-                            value="${animal?.birth_date || ''}">
+                            value="${animal?.birth_date ? animal.birth_date.split('T')[0] : ''}"}">
                     </div>
                     <div>
                         <label class="form-label">Initial Weight (kg)</label>

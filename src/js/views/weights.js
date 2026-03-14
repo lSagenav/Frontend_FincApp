@@ -16,9 +16,6 @@ export function renderWeights() {
                 <h2 class="text-xl font-bold">Weight Control</h2>
                 <p class="text-sm text-[var(--text-secondary)]">Track ADG (Average Daily Gain) per animal</p>
             </div>
-            <button id="btn-add-weight" class="btn-primary flex items-center gap-2 text-sm">
-                <i class="fas fa-plus"></i> Record Weight
-            </button>
         </div>
 
         <!-- Quick Record Form -->
@@ -29,9 +26,11 @@ export function renderWeights() {
             <form id="quick-weight-form" class="flex flex-wrap gap-3 items-start" novalidate>
             <div class="flex-1 min-w-32">
                 <label class="form-label">Animal Tag</label>
-                <input type="text" id="weight-tag" class="form-input" placeholder="e.g. A-101">
+                <select id="weight-tag" class="form-input">
+                    <option value="">Select animal...</option>
+                </select>
                 <span class="field-error hidden" id="err-weight-tag">
-                    <i class="fas fa-circle-exclamation mr-1"></i>Tag is required.
+                    <i class="fas fa-circle-exclamation mr-1"></i>Please select an animal.
                 </span>
             </div>
             <div class="flex-1 min-w-32">
@@ -102,15 +101,35 @@ export async function initWeightsLogic() {
 
     renderWeightTable(weightLogs);
 
+    try {
+        const animals = await apiService.get('animals');
+        const select = document.getElementById('weight-tag');
+        if (select && Array.isArray(animals)) {
+            animals.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.tag_number || a.id;
+                opt.textContent = `#${a.tag_number} — ${a.breed || 'Unknown'}`;
+                select.appendChild(opt);
+            });
+        }
+    } catch {
+        console.warn('Could not load animals for weight form');
+    }
+
     // Set today's date as default
     const dateInput = document.getElementById('weight-date');
     if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
 
-    ['weight-tag', 'weight-value', 'weight-date'].forEach(id => {
+    ['weight-value', 'weight-date'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', () => {
             document.getElementById(id).classList.remove('input-error');
             document.getElementById('err-' + id)?.classList.add('hidden');
         });
+    });
+
+    document.getElementById('weight-tag')?.addEventListener('change', () => {
+        document.getElementById('weight-tag').classList.remove('input-error');
+        document.getElementById('err-weight-tag')?.classList.add('hidden');
     });
 
     // Quick form submit
@@ -147,7 +166,8 @@ export async function initWeightsLogic() {
         const data = {
             animal_id: tag,
             current_weight: weight,
-            user_id: getCurrentUser()?.id || null
+            user_id: getCurrentUser()?.id || null,
+            weighing_date: date
         };
 
         // Calculate ADG if previous record exists
@@ -200,7 +220,7 @@ function renderWeightTable(logs) {
         const date = log.weighing_date ? new Date(log.weighing_date).toLocaleDateString('en-US') : '—';
         return `
         <tr>
-            <td class="font-bold">#${log.animal_id}</td>
+            <td class="font-bold">#${String(log.animal_id).replace('#', '')}</td>
             <td>${log.current_weight} kg</td>
             <td class="text-[var(--text-secondary)]">${date}</td>
             <td class="${perfClass} font-semibold">${adgDisplay}</td>

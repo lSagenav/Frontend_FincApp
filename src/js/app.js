@@ -15,7 +15,7 @@ window.navigateTo = navigateTo;
 window.toggleVoice = toggleVoice;
 window.toggleTheme = toggleTheme;
 window.logout = () => {
-    try { speak(`Session closed. See you later`); } catch (_) {}
+    try { speak(`Session closed. See you later`); } catch (_) { }
     authLogout();
     showAuthScreen();
 };
@@ -42,12 +42,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Mobile sidebar toggle
-    document.getElementById('menu-toggle')?.addEventListener('click', () => {
+    document.getElementById('menu-toggle')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         document.getElementById('sidebar')?.classList.toggle('open');
     });
 
-    // Click outside sidebar to close on mobile
-    document.getElementById('main-wrapper')?.addEventListener('click', () => {
+    document.getElementById('main-wrapper')?.addEventListener('click', (e) => {
         const sidebar = document.getElementById('sidebar');
         if (sidebar?.classList.contains('open')) {
             sidebar.classList.remove('open');

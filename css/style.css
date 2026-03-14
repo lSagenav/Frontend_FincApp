@@ -334,6 +334,7 @@ html.dark .badge-critical { background: #7f1d1d; color: #f87171; }
 @media (max-width: 1024px) {
     .sidebar {
         transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
     .sidebar.open {
         transform: translateX(0);

@@ -8,7 +8,7 @@ export function calculateGDP(currentWeight, previousWeight, lastDate, currentDat
     const end = new Date(currentDate);
     const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
 
-    if (days <= 0) return { gdp: 0, days: 0, performance: 'invalid' };
+    if (days <= 0) return { gdp: 0, days: 0, performance: 'same day' };
 
     const gdp = parseFloat(((currentWeight - previousWeight) / days).toFixed(2));
 
