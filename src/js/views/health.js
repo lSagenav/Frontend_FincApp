@@ -94,7 +94,7 @@ export async function initHealthLogic() {
     }
 
     try {
-        animals = await apiService.get('livestock');
+        animals = await apiService.get('animals')
     } catch {
         animals = getLocal('fincapp_livestock');
     }
